@@ -152,7 +152,7 @@
   /* ---------- landing ---------- */
   function landing() {
     const open = db().offers.filter((o) => o.status === "abierta").sort((a, b) => b.posted.localeCompare(a.posted)).slice(0, 4);
-    return `<main id="main">
+    return `<main id="main">${noticeHtml()}
       <section class="landing-intro">
         <h1>Trabajo remoto de medio tiempo para estudiantes universitarios argentinos.</h1>
         <p>Empresas de afuera publican tareas de 8 a 25 horas por semana. Vos te postulás con tu perfil de la facu: carrera, idiomas y horarios. Revisamos cada perfil a mano antes de mostrarlo.</p>
@@ -540,7 +540,13 @@
     const a = el.dataset.action;
     const d = db();
     if (a === "reset") {
-      if (confirm(lang() === "en" && location.hash.startsWith("#/c") ? "Your changes will be erased and the sample data restored. Continue?" : "Se borran los cambios que hiciste y vuelven los datos de ejemplo. ¿Seguimos?")) { Store.reset(); clearForm(); ui.filters = {}; ui.cFilters = {}; setNotice("Volvieron los datos de ejemplo."); go("#/"); }
+      // confirmación dentro de la página (los diálogos del navegador no funcionan en todos lados)
+      const en = lang() === "en" && location.hash.startsWith("#/c");
+      el.outerHTML = `<span class="reset-confirm">${en ? "Your changes will be erased." : "Se borran tus cambios."} <button class="linklike" data-action="reset-yes">${en ? "Reset" : "Sí, restablecer"}</button> <button class="linklike" data-action="reset-no">${en ? "Cancel" : "Cancelar"}</button></span>`;
+    } else if (a === "reset-no") {
+      render();
+    } else if (a === "reset-yes") {
+      Store.reset(); clearForm(); ui.filters = {}; ui.cFilters = {}; setNotice("Volvieron los datos de ejemplo."); go("#/");
     } else if (a === "demo-student") {
       d.session.studentId = "s1"; Store.save();
     } else if (a === "demo-company") {
