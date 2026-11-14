@@ -463,3 +463,10 @@ footer .inner { max-width: var(--max); margin: 0 auto; padding: var(--space-5); 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ---------- ingreso con mail ---------- */
+.auth { max-width: 440px; margin: var(--space-7) auto 0; }
+.auth h1 { margin-bottom: var(--space-3); }
+.auth .lead { margin-bottom: var(--space-5); }
+.auth .actions { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; margin-top: var(--space-5); }
+.auth-chip { font-size: var(--text-sm); color: var(--muted); max-width: 20ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

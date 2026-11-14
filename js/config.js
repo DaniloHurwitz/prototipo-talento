@@ -12,6 +12,15 @@ window.APP = {
       { id: "p80", amount: 80, usd: 9 },
     ],
   },
+  // Dirección pública de la app: es a donde vuelve el link del mail.
+  // Tiene que estar también en Supabase > Authentication > URL Configuration.
+  siteUrl: "https://danilohurwitz.github.io/prototipo-talento/",
+  // Datos públicos del proyecto de Supabase (la clave "publishable" está pensada para ir en el navegador).
+  // NUNCA pongas acá la clave "secret" / service_role.
+  supabase: {
+    url: "https://bsgxkgzvymtyizcangaz.supabase.co",
+    anonKey: "sb_publishable_GCCYGs7pUKf9GRMTVR9kdw_dwA_UB5V",
+  },
   commissionDefault: 10, // % que paga la empresa sobre lo facturado
   // Fecha "de hoy" fija para que la demo se vea igual siempre
   today: "2026-11-13",

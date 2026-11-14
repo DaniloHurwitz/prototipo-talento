@@ -120,7 +120,7 @@
       const n = student(d.session.studentId).connects;
       extra = `<a class="connects-chip${n < 4 ? " low" : ""}" href="#/e/connects" title="Tu saldo de Connects"><strong>${n}</strong> Connects</a>`;
     }
-    if (view === "c") {
+    if (view === "c" || view === "entrar") {
       extra = `<div class="seg" role="group" aria-label="Idioma / Language">
         <button type="button" data-action="lang" data-lang="es" aria-pressed="${lang() === "es"}">ES</button>
         <button type="button" data-action="lang" data-lang="en" aria-pressed="${lang() === "en"}">EN</button></div>`;
@@ -134,7 +134,7 @@
           <a href="#/e"${cur("e")}>Estudiante</a><a href="#/c"${cur("c")}>Empresa</a><a href="#/a"${cur("a")}>Admin</a>
         </div>
       </nav>
-      <div class="topbar-extra">${extra}</div>
+      <div class="topbar-extra">${extra}${window.Auth ? Auth.chip() : ""}</div>
     </div></header>`;
   }
   function tabs(items, current, who) {
@@ -143,6 +143,7 @@
   }
   function footer(view) {
     const en = view === "c" && lang() === "en";
+    if (view === "entrar") return `<footer><div class="inner"><span>${Auth.footer()}</span></div></footer>`;
     return `<footer><div class="inner">
       <span>${en ? "Prototype with no server. All data is sample data and stays in this browser." : "Prototipo sin servidor. Los datos son de ejemplo y se guardan solo en este navegador."}</span>
       <button class="linklike" data-action="reset">${en ? "Reset the sample data" : "Restablecer los datos de ejemplo"}</button>
@@ -520,9 +521,10 @@
     if (view === "e") html = studentView(parts.slice(1));
     else if (view === "c") html = CompanyViews.render(parts.slice(1));
     else if (view === "a") html = AdminViews.render(parts.slice(1));
+    else if (view === "entrar") html = Auth.render();
     else html = landing();
-    document.title = (view === "c" && lang() === "en" ? `${APP.name}, for companies` : view === "a" ? `${APP.name}, admin` : `${APP.name}, trabajo remoto para estudiantes`) + " (demo)";
-    document.documentElement.lang = view === "c" ? lang() : "es";
+    document.title = (view === "entrar" ? `${APP.name}, ${Auth.docTitle()}` : view === "c" && lang() === "en" ? `${APP.name}, for companies` : view === "a" ? `${APP.name}, admin` : `${APP.name}, trabajo remoto para estudiantes`) + " (demo)";
+    document.documentElement.lang = view === "c" || view === "entrar" ? lang() : "es";
     document.getElementById("app").innerHTML = `<a class="skip" href="#main">Ir al contenido</a>` + topbar(view) + html + footer(view);
     if (window.__focusId) { const el = document.getElementById(window.__focusId); window.__focusId = null; if (el) el.focus(); }
   }
@@ -570,6 +572,8 @@
       if (a === "accept-invite") { ap.status = "enviada"; ap.rate = me.rate; ap.date = APP.today; setNotice(`Aceptaste la invitación. ${company(offer(ap.offerId).companyId).name} ya ve tu postulación, sin costo de Connects.`); }
       else { ap.status = "rechazada_por_vos"; setNotice("Rechazaste la invitación. La empresa no ve el motivo.", "warn"); }
       Store.save(); render();
+    } else if (window.Auth && Auth.action(a, el)) {
+      // manejado en el ingreso con mail
     } else if (window.CompanyViews && CompanyViews.action(a, el, e)) {
       // manejado en la vista de empresa
     } else if (window.AdminViews) {
@@ -657,6 +661,7 @@
       setNotice(`Sumamos ${pk.amount} Connects (compra simulada, no se cobró nada). Ahora tenés ${me.connects}.`);
       render(); window.scrollTo(0, 0); return;
     }
+    if (window.Auth && Auth.submit(kind, form, f)) return;
     if (window.CompanyViews && CompanyViews.submit(kind, form, f)) return;
     if (window.AdminViews) AdminViews.submit(kind, form, f);
   });
